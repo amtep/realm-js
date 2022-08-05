@@ -98,7 +98,7 @@ jobs:
     - name: Upload Github Release artifacts
       run: |
         npm install -g prebuild
-        npm prebuild --upload ${{ secrets.GITHUB_TOKEN }}
+        prebuild --upload ${{ secrets.GITHUB_TOKEN }}
 
     - name: 'Post to #realm-releases'
       uses: realm/ci-actions/release-to-slack@v3
