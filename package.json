@@ -24,10 +24,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/realm/realm-js.git"
+    "url": "https://github.com/amtep/realm-js.git"
   },
   "bugs": {
-    "url": "https://github.com/realm/realm-js/issues"
+    "url": "https://github.com/amtep/realm-js/issues"
   },
   "types": "types/index.d.ts",
   "main": "lib/index.js",
