@@ -55,11 +55,6 @@ jobs:
         workflow_conclusion: completed
         github_token: ${{ secrets.REALM_CI_PAT }}
 
-    - name: Move prebuild artifacts
-      run: |
-        mv ./realm-js-prebuilds/prebuilds .
-        rm -r ./realm-js-prebuilds
-
     - name: Read version
       id: get-version
       run: |
@@ -100,6 +95,18 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
         draft: false
         prerelease: ${{ steps.get-version.outputs.prerelease }}
+
+    - name: Prepare prebuild artifacts for uploading
+      run: |
+        mkdir -p prebuilds
+        mv ./realm-js-prebuilds/prebuilds/* prebuilds/
+        for platform in $(cd realm-js-prebuilds/react-native/android/src/main/jniLibs; ls); do
+          tar cfva prebuilds/realm-v${{ steps.get-version.outputs.version }}-android-$platform.tar.gz realm-js-prebuilds/react-native/android/src/main/jniLibs/$platform
+        done
+        for platform in $(cd realm-js-prebuilds/react-native/ios/realm-js-ios.xcframework; ls -d ios-*); do
+          tar cfva prebuilds/realm-v${{ steps.get-version.outputs.version }}-$platform.tar.gz realm-js-prebuilds/react-native/ios/realm-js-ios.xcframework/$platform
+        done
+        rm -r ./realm-js-prebuilds
 
     - name: Upload Github Release artifacts
       run: |
