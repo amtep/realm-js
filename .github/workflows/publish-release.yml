@@ -56,8 +56,10 @@ jobs:
         github_token: ${{ secrets.REALM_CI_PAT }}
 
     - name: Move prebuild artifacts
+      # Using cp -a in order to move files into already-existing directory
+      # structure. mv doesn't have a flag like that.
       run: |
-        mv ./realm-js-prebuilds/prebuilds .
+        cp -a ./realm-js-prebuilds/* .
         rm -r ./realm-js-prebuilds
 
     - name: Read version
