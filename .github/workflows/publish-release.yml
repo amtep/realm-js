@@ -54,13 +54,10 @@ jobs:
         path: ${{ github.workspace }}
         workflow_conclusion: completed
         github_token: ${{ secrets.REALM_CI_PAT }}
+        name: realm-js-prebuilds
 
-    - name: Move prebuild artifacts
-      # Using cp -a in order to move files into already-existing directory
-      # structure. mv doesn't have a flag like that.
-      run: |
-        cp -a ./realm-js-prebuilds/* .
-        rm -r ./realm-js-prebuilds
+    - name: Install prebuilds
+      run: npm ci
 
     - name: Read version
       id: get-version
@@ -106,7 +103,7 @@ jobs:
     - name: Upload Github Release artifacts
       run: |
         npm install -g prebuild
-        prebuild --upload-all ${{ secrets.GITHUB_TOKEN }} --verbose
+        prebuild --upload ${{ secrets.GITHUB_TOKEN }} --verbose
 
     - name: 'Post to #realm-releases'
       uses: realm/ci-actions/release-to-slack@v3
