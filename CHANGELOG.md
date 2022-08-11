@@ -1,7 +1,7 @@
 ## vNext (TBD)
 
 ### Enhancements
-* None.
+* None
 
 ### Fixed
 * Fixed issue where React Native apps on Android would sometimes show stale Realm data until the user interacted with the app UI. ([#4389](https://github.com/realm/realm-js/issues/4389), since v10.0.0)
@@ -30,8 +30,8 @@
 * Fixed an issue starting the integration test runner on iOS. ([#4742](https://github.com/realm/realm-js/pull/4742]))
 * Migrated to `std::optional` and `std::nullopt`. 
 
-10.19.5 Release notes (2022-7-6)
-=============================================================
+## 10.19.5 (2022-7-6)
+
 ### Enhancements
 * None.
 
@@ -47,8 +47,8 @@
 ### Internal
 * Using Realm Core v12.3.0.
 
-10.19.4 Release notes (2022-7-5)
-=============================================================
+## 10.19.4 (2022-7-5)
+
 ### Enhancements
 * Allow flexible sync with discard local client resets. ([realm/realm-core#5404](https://github.com/realm/realm-core/pull/5404))
 
@@ -72,8 +72,8 @@
 * Enabled debugging Realm C++ code in integration test app. ([#4696](https://github.com/realm/realm-js/pull/4696))
 * Fixed types for flexible sync client reset and added a test. ([#4702](https://github.com/realm/realm-js/pull/4702))
 
-10.19.3 Release notes (2022-6-27)
-=============================================================
+## 10.19.3 (2022-6-27)
+
 ### Enhancements
 * None.
 
@@ -94,8 +94,8 @@
 * Upgraded Realm Core from v12.1.0 to v12.2.0. ([#4679](https://github.com/realm/realm-js/issues/4679))
 * Enabled `testNoMigrationOnSync`. ([#3312](https://github.com/realm/realm-js/issues/3312))
 
-10.19.2 Release notes (2022-6-20)
-=============================================================
+## 10.19.2 (2022-6-20)
+
 ### Enhancements
 * None.
 
