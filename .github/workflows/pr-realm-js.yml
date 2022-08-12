@@ -57,6 +57,7 @@ jobs:
 
       - name: Cache prebuild artifacts
         id: cache-prebuild
+        if: ${{ runner.os != 'Windows' }}
         uses: actions/cache@v2
         with:
           path: ${{ matrix.variant.artifact-path }}
