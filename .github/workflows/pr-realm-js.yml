@@ -110,10 +110,6 @@ jobs:
         if: ${{ matrix.variant.os == 'android' }}
         run: sdkmanager --install "ndk;${{ env.NDK_VERSION }}"
 
-      - name: check cl.exe
-        shell: bash
-        run: type -all cl.exe
-
       - name: ccache
         uses: hendrikmuhs/ccache-action@bd43b7f5fb36d5f97ef5c6cc818a2055b04f610a
         with:
@@ -134,6 +130,19 @@ jobs:
       - name: Install dependencies
         # Ignoring scripts to prevent a prebuilt from getting fetched / built
         run: npm ci --ignore-scripts
+
+      - name: Install ccache executables (Windows)
+        if: ${{ runner.os == 'Windows' }}
+        shell: bash
+        run: |
+          clexe=$(type -P cl.exe)
+          echo $clexe
+          clexe_dir=$(dirname "$clexe")
+          echo $clexe_dir
+          mv "$clexe_dir/cl.exe" "$clexe_dir/cl-orig.exe"
+          mv "$clexe_dir/cl.exe.config" "$clexe_dir/cl-orig.exe.config"
+          mv "$(type -P ccache.exe)" "$clexe_dir/cl.exe"
+          echo "CCACHE_COMPILER=cl-orig.exe" >> $GITHUB_ENV
 
       # build the c++ library for standard targets
       - name: Build node
