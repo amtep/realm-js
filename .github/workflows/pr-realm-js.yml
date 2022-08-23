@@ -131,23 +131,12 @@ jobs:
         # Ignoring scripts to prevent a prebuilt from getting fetched / built
         run: npm ci --ignore-scripts
 
-      - name: clcache checkout
-        if: ${{ runner.os == 'Windows' }}
-        uses: actions/checkout@v3
-        with:
-          repository: Nuitka/clcache
-          ref: 12ee253c75dd8451484bd78dd30eab1fd49b63cb
-          path: clcache
-
-      - name: clcache build
+      - name: Install clcache
         if: ${{ runner.os == 'Windows' }}
         run: |
-          pip install pyinstaller
-          cd clcache
-          pyinstaller pyinstaller/clcache_main.py
-          ls -l clcache/dist
+          pip install git+https://github.com/Nuitka/clcache.git
 
-      - name: Install clcache executables
+      - name: Insert clcache executables
         if: ${{ runner.os == 'Windows' }}
         shell: bash
         run: |
@@ -155,11 +144,15 @@ jobs:
           echo $clexe
           clexe_dir=$(dirname "$clexe")
           echo $clexe_dir
-          mv "$clexe_dir/cl.exe" "$clexe_dir/cl-orig.exe"
-          mv "$clexe_dir/cl.exe.config" "$clexe_dir/cl-orig.exe.config"
-          mv clcache/dist/clcache_main.exe clcache/dist/cl.exe
-          mv clcache/dist/* "$clexe_dir/"
-          CLCACHE=cl-orig.exe cl.exe # see if it works
+          clcacheexe=$(type -P clcache.exe)
+          echo $clcacheexe
+          clcache_dir=$(dirname "$clcacheexe")
+          echo $clcache_dir
+          mv -v "$clexe_dir/cl.exe" "$clexe_dir/cl-orig.exe"
+          mv -v "$clexe_dir/cl.exe.config" "$clexe_dir/cl-orig.exe.config"
+          cp -v "$clcacheexe" "$clexe_dir/cl.exe"
+          cp -v "$clcache_dir"/clcache-script.py "$clexe_dir"/cl-script.py
+          CLCACHE_CL=cl-orig.exe cl.exe # see if it works
           echo "CLCACHE_CL=cl-orig.exe" >> $GITHUB_ENV
 
       # build the c++ library for standard targets
