@@ -143,14 +143,16 @@ jobs:
           cp -v "$clcacheexe" "$clcache_dir"/cl.exe
           cp -v "$clcache_dir"/clcache-script.py "$clcache_dir"/cl-script.py
           set
+          echo "$clcache_dir" >>$GITHUB_PATH
 
       - name: Use powershell
         run: |
           echo $Env:Path
-          echo "Path=C:\\hostedtoolcache\\windows\\Python\\3.9.13\\x64\\Scripts;$Env:Path" >> $GITHUB_ENV
+          echo "Path=C:\\hostedtoolcache\\windows\\Python\\3.9.13\\x64\\Scripts;$Env:Path" >> $Env:GITHUB_ENV
 
       - name: See if clcache works
         run: |
+          echo $Env:Path
           cl.exe
           cl.exe -s
 
