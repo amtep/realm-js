@@ -136,20 +136,18 @@ jobs:
         if: ${{ runner.os == 'Windows' }}
         shell: bash
         run: |
-          clexe=$(type -P cl.exe)
-          echo $clexe
-          clexe_dir=$(dirname "$clexe")
-          echo $clexe_dir
           clcacheexe=$(type -P clcache.exe)
           echo $clcacheexe
           clcache_dir=$(dirname "$clcacheexe")
           echo $clcache_dir
-          mv -v "$clexe_dir/cl.exe" "$clexe_dir/cl-orig.exe"
-          mv -v "$clexe_dir/cl.exe.config" "$clexe_dir/cl-orig.exe.config"
-          cp -v "$clcacheexe" "$clexe_dir/cl.exe"
-          cp -v "$clcache_dir"/clcache-script.py "$clexe_dir"/cl-script.py
-          CLCACHE_CL=cl-orig.exe cl.exe # see if it works
-          echo "CLCACHE_CL=cl-orig.exe" >> $GITHUB_ENV
+          cp -v "$clcacheexe" "$clcache_dir"/cl.exe
+          cp -v "$clcache_dir"/clcache-script.py "$clcache_dir"/cl-script.py
+          echo "$clcache_dir" >> $GITHUB_PATH
+
+      - name: See if clcache works
+        run: |
+         cl.exe
+         cl.exe -s
 
       # build the c++ library for standard targets
       - name: Build node
@@ -179,6 +177,9 @@ jobs:
           path: |
             dependencies.list
             ${{ matrix.variant.artifact-path }}
+
+      - name: clcache stats
+        run: clcache -s
 
   integration-tests:
     name: Integration tests (${{matrix.variant.target}}) for ${{ matrix.variant.environment }} on ${{ matrix.variant.os }}
