@@ -1,4 +1,38 @@
-# How to release Realm JavaScript
+# How to release Realm JavaScript (with Actions)
+
+We're moving toward releasing via GitHub Actions, but since the Actions can't yet do prereleases, this document contains both the new way and the old way.
+
+In order to release Realm JavaScript, you need to be member of the [Realm organization at Github](https://github.com/realm).
+
+It is possible to add a specific tag for the release on npm, for example to release a `beta` version without affecting the `latest` version users will install by default.
+
+The procedure is:
+
+- Proof-read and mildly edit `CHANGELOG.md`.
+    - You can edit it directly on github [CHANGELOG.md](https://github.com/realm/realm-js/edit/master/CHANGELOG.md) or you can check out the latest master and edit it locally.
+    - Verify that all fixes are linked to the associated pull request.
+    - If the release upgrades `realm-core`, review the `realm-core` release notes and copy over any relevant notes (edited to be JS-specific if appropriate) into our `CHANGELOG`.
+    - Make sure the "Breaking Changes" and "Enhancements" sections are present if appropriate. These will be used to set the new version number, following [semantic versioning](https://semver.org/).
+- If you made changes: add, commit, and push the changes to the changelog:
+    - `git add CHANGELOG.md`
+    - `git commit -m "Reviewed changelog"`
+    - `git push origin master`
+- Make sure that the latest commit to [master](https://github.com/realm/realm-js) has a green checkmark next to the commit id, indicating that everything was built without errors. You may have to wait a few minutes for this, if you just made changes.
+- Click on the "Actions" tab, scroll down to "Prepare Release", and click on that. If you have access to the Realm group, you will see a note "This workflow has a `workflow_dispatch` event trigger", with a "run workflow" pull-down button.
+- Click on "Run workflow" for branch master. This will create a release branch.
+- Click on the "Actions" tab again. After a minute or so, you will see several actions running on the "Prepare for X.Y.Z" commit of the release branch. Wait for them to complete.
+- Make any changes to the release branch that you feel are necessary. This is also a good point to ask for reviews and manual testing.
+- Scroll down to "Publish Release" (not "Prepare") and click on it. Pull down the "Run workflow" button again. This time, you can edit the release tag for `npm` and set it to something other than `latest` if you want to make a prerelease.
+- Select the release branch that was just made, and click on "Run workflow".
+    - If you accidentally ran "Publish Release" on the master branch, it will fail harmlessly. Just do this step again.
+- Now just wait for the Publish Release action to complete.
+    - It will create a tagged Release on github.
+    - It will publish all the builds with `npm publish`.
+    - It will announce the release on Slack
+    - It will merge the release branch to `master`
+    - It will prepare the changelog for the next version.
+
+# How to release Realm Javascript (manual way)
 
 In order to release Realm JavaScript, you need to be added as a collaborator at [npm](https://npmjs.com) and you need to log in when publishing the package. Moreover, you will need to be member of the [Realm organization at Github](https://github.com/realm).
 
@@ -48,9 +82,9 @@ The procedure is:
 - Push the template: `git push origin master`
     - If you are releasing from another branch, then use that instead of `master`
 
-## Troubleshooting
+# Troubleshooting
 
-### I accidentally published a release as `latest` when it should have been a tagged release
+## I accidentally published a release as `latest` when it should have been a tagged release
 
 - Reset the `latest` tag to point to the correct version (the last published version): `npm dist-tag add realm@X.Y.Z latest`, e.g. `npm dist-tag add realm@10.11.0 latest`
 - Set the tag to point to your version: `npm dist-tag add realm@X.Y.Z-tag.n <tag_name>`, e.g. `npm dist-tag add realm@10.12.0-beta.0 beta`
