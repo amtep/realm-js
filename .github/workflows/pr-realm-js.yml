@@ -136,6 +136,7 @@ jobs:
         if: ${{ runner.os == 'Windows' }}
         shell: bash
         run: |
+          echo $(type -P cl.exe)
           clcacheexe=$(type -P clcache.exe)
           echo $clcacheexe
           clcache_dir=$(dirname "$clcacheexe")
@@ -143,16 +144,19 @@ jobs:
           cp -v "$clcacheexe" "$clcache_dir"/cl.exe
           cp -v "$clcache_dir"/clcache-script.py "$clcache_dir"/cl-script.py
           set
-          echo "$clcache_dir" >>$GITHUB_PATH
 
       - name: Use powershell
         run: |
+          Get-Command cl -All | Format-Table CommandType, Name, Definition
           echo $Env:Path
-          echo "Path=C:\\hostedtoolcache\\windows\\Python\\3.9.13\\x64\\Scripts;$Env:Path" >> $Env:GITHUB_ENV
+          echo 'CLCACHE_CL=C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.33.31629\bin\HostX64\x64\cl.exe' >> $Env:GITHUB_ENV
+          echo "C:\hostedtoolcache\windows\Python\3.9.13\x64\Scripts" >> $Env:GITHUB_PATH
 
       - name: See if clcache works
         run: |
           echo $Env:Path
+          echo $Env:CLCACHE_CL
+          cl.exe -s
           cl.exe
           cl.exe -s
 
