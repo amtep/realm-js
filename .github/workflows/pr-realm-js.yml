@@ -133,24 +133,15 @@ jobs:
           pip install git+https://github.com/Nuitka/clcache.git
 
       - name: Insert clcache executables
-        if: ${{ runner.os == 'Windows' }}
-        shell: bash
-        run: |
-          echo $(type -P cl.exe)
-          clcacheexe=$(type -P clcache.exe)
-          echo $clcacheexe
-          clcache_dir=$(dirname "$clcacheexe")
-          echo $clcache_dir
-          cp -v "$clcacheexe" "$clcache_dir"/cl.exe
-          cp -v "$clcache_dir"/clcache-script.py "$clcache_dir"/cl-script.py
-          set
-
-      - name: Use powershell
         run: |
           Get-Command cl -All | Format-Table CommandType, Name, Definition
-          echo $Env:Path
-          echo 'CLCACHE_CL=C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.33.31629\bin\HostX64\x64\cl.exe' >> $Env:GITHUB_ENV
-          echo "C:\hostedtoolcache\windows\Python\3.9.13\x64\Scripts" >> $Env:GITHUB_PATH
+          Get-Command clcache -All | Format-Table CommandType, Name, Definition
+          Rename-Item -Path "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.33.31629\bin\HostX64\x64\cl.exe" -NewName "cl-real.exe"
+          Rename-Item -Path "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.33.31629\bin\HostX64\x64\cl.exe.config" -NewName "cl-real.exe.config"
+          Copy-Item "C:\hostedtoolcache\windows\Python\3.9.13\x64\Scripts\clcache.exe" -Destination "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.33.31629\bin\HostX64\x64\cl.exe"
+          Copy-Item  "C:\hostedtoolcache\windows\Python\3.9.13\x64\Scripts\clcache-script.py" -Destination "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.33.31629\bin\HostX64\x64\cl-script.py"
+          Get-ChildItem "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.33.31629\bin\HostX64\x64\"
+          echo 'CLCACHE_CL=C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.33.31629\bin\HostX64\x64\cl-real.exe' >> $Env:GITHUB_ENV
 
       - name: See if clcache works
         run: |
