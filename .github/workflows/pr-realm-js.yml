@@ -151,6 +151,11 @@ jobs:
           cl.exe
           cl.exe -s
 
+      - name: remote debug
+        uses: mxschmitt/action-tmate@v3
+        with:
+          limit-access-to-actor: true
+
       # build the c++ library for standard targets
       - name: Build node
         if: ${{ (matrix.variant.os != 'ios') && (matrix.variant.os != 'android') }}
