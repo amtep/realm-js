@@ -158,6 +158,10 @@ jobs:
         if: ${{ (matrix.variant.os != 'ios') && (matrix.variant.os != 'android') }}
         run: npm run prebuild:node -- --arch=${{matrix.variant.arch}}
 
+      - name: print log
+        if: ${{ runner.os == 'Windows' && failure() }}
+        run: cat 'D:\a\realm-js\realm-js\vendor\realm-core\tools\vcpkg\ports\buildtrees\zlib\install-x64-windows-dbg-out.log'
+
       - name: remote debug
         if: ${{ runner.os == 'Windows' && failure() }}
         uses: mxschmitt/action-tmate@v3
