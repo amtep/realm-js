@@ -127,31 +127,25 @@ jobs:
         # Ignoring scripts to prevent a prebuilt from getting fetched / built
         run: npm ci --ignore-scripts
 
-      - name: Install clcache
-        if: ${{ runner.os == 'Windows' }}
-        run: |
-          pip install git+https://github.com/Nuitka/clcache.git
-
-      - name: Insert clcache executables
+      - name: Insert ccache executables
         run: |
           Get-Command cl -All | Format-Table CommandType, Name, Definition
-          Get-Command clcache -All | Format-Table CommandType, Name, Definition
+          Get-Command ccache -All | Format-Table CommandType, Name, Definition
           Rename-Item -Path "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.33.31629\bin\HostX64\x64\cl.exe" -NewName "cl-real.exe"
           Rename-Item -Path "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.33.31629\bin\HostX64\x64\cl.exe.config" -NewName "cl-real.exe.config"
           Copy-Item "C:\hostedtoolcache\windows\Python\3.9.13\x64\Scripts\clcache.exe" -Destination "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.33.31629\bin\HostX64\x64\cl.exe"
           Copy-Item  "C:\hostedtoolcache\windows\Python\3.9.13\x64\Scripts\clcache-script.py" -Destination "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.33.31629\bin\HostX64\x64\cl-script.py"
           Get-ChildItem "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.33.31629\bin\HostX64\x64\"
-          echo 'CLCACHE_CL=C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.33.31629\bin\HostX64\x64\cl-real.exe' >> $Env:GITHUB_ENV
-          echo 'CLCACHE_LOG=1' >> $Env:GITHUB_ENV
-          echo 'VCPKG_KEEP_ENV_VARS=CLCACHE_CL;CLCACHE_LOG' >> $Env:GITHUB_ENV
+          echo 'CCACHE_CC=C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.33.31629\bin\HostX64\x64\cl-real.exe' >> $Env:GITHUB_ENV
+          echo 'VCPKG_KEEP_ENV_VARS=CCACHE_CC' >> $Env:GITHUB_ENV
 
-      - name: See if clcache works
+      - name: See if ccache works
         run: |
           echo $Env:Path
-          echo $Env:CLCACHE_CL
-          cl.exe -s
+          echo $Env:CLCACHE_CC
+          ccache -s
           cl.exe
-          cl.exe -s
+          ccache -s
 
       # build the c++ library for standard targets
       - name: Build node
@@ -191,9 +185,6 @@ jobs:
           path: |
             dependencies.list
             ${{ matrix.variant.artifact-path }}
-
-      - name: clcache stats
-        run: clcache -s
 
   integration-tests:
     name: Integration tests (${{matrix.variant.target}}) for ${{ matrix.variant.environment }} on ${{ matrix.variant.os }}
