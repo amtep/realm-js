@@ -135,7 +135,7 @@ jobs:
           Rename-Item -Path "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.33.31629\bin\HostX64\x64\cl.exe.config" -NewName "cl-real.exe.config"
           Copy-Item "C:\ProgramData\Chocolatey\lib\mingw\tools\install\mingw64\bin\ccache.exe" -Destination "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.33.31629\bin\HostX64\x64\cl.exe"
           Get-ChildItem "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.33.31629\bin\HostX64\x64\"
-          echo 'CCACHE_CC=C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.33.31629\bin\HostX64\x64\cl-real.exe' >> $Env:GITHUB_ENV
+          echo 'CCACHE_CC=cl-real.exe' >> $Env:GITHUB_ENV
           echo 'VCPKG_KEEP_ENV_VARS=CCACHE_CC' >> $Env:GITHUB_ENV
 
       - name: See if ccache works
