@@ -141,15 +141,24 @@ jobs:
       - name: See if ccache works
         run: |
           echo $Env:Path
-          echo $Env:CLCACHE_CC
+          echo $Env:CCACHE_CC
           ccache -s
           cl.exe
+          cl.exe /?
           ccache -s
 
       # build the c++ library for standard targets
       - name: Build node
         if: ${{ (matrix.variant.os != 'ios') && (matrix.variant.os != 'android') }}
         run: npm run prebuild:node -- --arch=${{matrix.variant.arch}}
+
+      - name: print log
+        if: ${{ runner.os == 'Windows' && failure() }}
+        run: |
+          echo "STDOUT"
+          cat 'D:\a\realm-js\realm-js\vendor\realm-core\tools\vcpkg\ports\buildtrees\openssl\build-x64-windows-rel-1-out.log'
+          echo "STDERR"
+          cat 'D:\a\realm-js\realm-js\vendor\realm-core\tools\vcpkg\ports\buildtrees\openssl\build-x64-windows-rel-1-err.log'
 
       # build the c++ library for IOS
       - name: Build IOS
