@@ -133,8 +133,7 @@ jobs:
           Get-Command ccache -All | Format-Table CommandType, Name, Definition
           Rename-Item -Path "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.33.31629\bin\HostX64\x64\cl.exe" -NewName "cl-real.exe"
           Rename-Item -Path "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.33.31629\bin\HostX64\x64\cl.exe.config" -NewName "cl-real.exe.config"
-          Copy-Item "C:\hostedtoolcache\windows\Python\3.9.13\x64\Scripts\clcache.exe" -Destination "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.33.31629\bin\HostX64\x64\cl.exe"
-          Copy-Item  "C:\hostedtoolcache\windows\Python\3.9.13\x64\Scripts\clcache-script.py" -Destination "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.33.31629\bin\HostX64\x64\cl-script.py"
+          Copy-Item "C:\ProgramData\Chocolatey\bin\ccache.exe" -Destination "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.33.31629\bin\HostX64\x64\cl.exe"
           Get-ChildItem "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.33.31629\bin\HostX64\x64\"
           echo 'CCACHE_CC=C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.33.31629\bin\HostX64\x64\cl-real.exe' >> $Env:GITHUB_ENV
           echo 'VCPKG_KEEP_ENV_VARS=CCACHE_CC' >> $Env:GITHUB_ENV
@@ -151,16 +150,6 @@ jobs:
       - name: Build node
         if: ${{ (matrix.variant.os != 'ios') && (matrix.variant.os != 'android') }}
         run: npm run prebuild:node -- --arch=${{matrix.variant.arch}}
-
-      - name: print log
-        if: ${{ runner.os == 'Windows' && failure() }}
-        run: cat 'D:\a\realm-js\realm-js\vendor\realm-core\tools\vcpkg\ports\buildtrees\zlib\install-x64-windows-dbg-out.log'
-
-      - name: remote debug
-        if: ${{ runner.os == 'Windows' && failure() }}
-        uses: mxschmitt/action-tmate@v3
-        with:
-          limit-access-to-actor: true
 
       # build the c++ library for IOS
       - name: Build IOS
