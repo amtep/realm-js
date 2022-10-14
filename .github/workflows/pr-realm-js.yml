@@ -106,6 +106,13 @@ jobs:
         if: ${{ matrix.variant.os == 'android' }}
         run: sdkmanager --install "ndk;${{ env.NDK_VERSION }}"
 
+      - name: Remove pre-installed ccache
+        if: ${{ runner.os == 'Windows' }}
+        shell: bash
+        run: |
+          rm -fv $(which ccache)
+          rm -fv $(which ccache)
+
       - name: ccache
         uses: hendrikmuhs/ccache-action@bd43b7f5fb36d5f97ef5c6cc818a2055b04f610a
         with:
