@@ -139,11 +139,14 @@ jobs:
           Get-Command cl -All | Format-Table CommandType, Name, Definition
           Get-Command ccache -All | Format-Table CommandType, Name, Definition
           Rename-Item -Path "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.33.31629\bin\HostX64\x64\cl.exe" -NewName "cl-real.exe"
-          Rename-Item -Path "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.33.31629\bin\HostX64\x64\cl.exe.config" -NewName "cl-real.exe.config"
+          Copy-Item -Path "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.33.31629\bin\HostX64\x64\cl.exe.config" "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.33.31629\bin\HostX64\x64\cl-real.exe.config" 
           Copy-Item "C:\Users\runneradmin\.cargo\bin\ccache.exe" -Destination "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.33.31629\bin\HostX64\x64\cl.exe"
           Get-ChildItem "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.33.31629\bin\HostX64\x64\"
-          Get-ChildItem "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\" -Recurse -Filter 'cl.*'
-          echo 'CCACHE_CC=C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.33.31629\bin\HostX64\x64\cl-real.exe' >> $Env:GITHUB_ENV
+          Get-ChildItem "C:\Program Files\Microsoft Visual Studio\" -Recurse -Filter 'cl.*'
+          echo 'CCACHE_COMPILER=C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.33.31629\bin\HostX64\x64\cl-real.exe' >> $Env:GITHUB_ENV
+          echo 'CCACHE_COMPILERTYPE=msvc' >> $Env:GITHUB_ENV
+          echo 'CCACHE_STATSLOG=C:\Users\runneradmin\ccache\statslog.txt' >> $Env:GITHUB_ENV
+          echo 'CCACHE_LOGFILE=C:\Users\runneradmin\ccache\logfile.txt' >> $Env:GITHUB_ENV
           echo 'VCPKG_KEEP_ENV_VARS=CCACHE_CC' >> $Env:GITHUB_ENV
 
       - name: See if ccache works
@@ -154,11 +157,20 @@ jobs:
           cl
           cl /?
           ccache -s
+          ccache --show-log-stats -v -v
+          cat C:\Users\runneradmin\ccache\logfile.txt
 
       # build the c++ library for standard targets
       - name: Build node
         if: ${{ (matrix.variant.os != 'ios') && (matrix.variant.os != 'android') }}
         run: npm run prebuild:node -- --arch=${{matrix.variant.arch}}
+
+      - name: ccache info
+        if: ${{ runner.os == 'Windows' }}
+        run: |
+          ccache -s
+          ccache --show-log-stats -v -v
+          cat C:\Users\runneradmin\ccache\logfile.txt
 
       - name: print log
         if: ${{ runner.os == 'Windows' && failure() }}
