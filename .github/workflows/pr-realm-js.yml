@@ -142,7 +142,6 @@ jobs:
           Copy-Item -Path "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.33.31629\bin\HostX64\x64\cl.exe.config" "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.33.31629\bin\HostX64\x64\cl-real.exe.config" 
           Copy-Item "C:\Users\runneradmin\.cargo\bin\ccache.exe" -Destination "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.33.31629\bin\HostX64\x64\cl.exe"
           Get-ChildItem "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.33.31629\bin\HostX64\x64\"
-          Get-ChildItem "C:\Program Files\Microsoft Visual Studio\" -Recurse -Filter 'cl.*'
           echo 'CCACHE_COMPILER=C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.33.31629\bin\HostX64\x64\cl-real.exe' >> $Env:GITHUB_ENV
           echo 'CCACHE_COMPILERTYPE=msvc' >> $Env:GITHUB_ENV
           echo 'CCACHE_STATSLOG=C:\Users\runneradmin\ccache\statslog.txt' >> $Env:GITHUB_ENV
