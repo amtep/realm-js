@@ -147,7 +147,8 @@ jobs:
           echo 'CCACHE_COMPILERTYPE=msvc' >> $Env:GITHUB_ENV
           echo 'CCACHE_STATSLOG=C:\Users\runneradmin\ccache\statslog.txt' >> $Env:GITHUB_ENV
           echo 'CCACHE_LOGFILE=C:\Users\runneradmin\ccache\logfile.txt' >> $Env:GITHUB_ENV
-          echo 'VCPKG_KEEP_ENV_VARS=CCACHE_COMPILER;CCACHE_STATSLOG;CCACHE_LOGFILE;CCACHE_COMPILERTYPE' >> $Env:GITHUB_ENV
+          echo 'UseMultiToolTask=true' >> $Env:GITHUB_ENV
+          echo 'VCPKG_KEEP_ENV_VARS=CCACHE_COMPILER;CCACHE_STATSLOG;CCACHE_LOGFILE;CCACHE_COMPILERTYPE;UseMultiToolTask' >> $Env:GITHUB_ENV
 
       - name: See if ccache works
         run: |
