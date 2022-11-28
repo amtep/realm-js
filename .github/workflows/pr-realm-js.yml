@@ -125,7 +125,6 @@ jobs:
           echo "/usr/lib/ccache:/usr/local/opt/ccache/libexec" >> $GITHUB_PATH
 
       - name: Configure ccache
-        if: ${{ runner.os != 'Windows' }}
         run: |
           ccache --set-config="compiler_check=content"
           ccache --show-config
@@ -135,19 +134,23 @@ jobs:
         run: npm ci --ignore-scripts
 
       - name: Insert ccache executables
+        if: ${{ runner.os == 'Windows' }}
+        shell: bash
         run: |
-          Get-Command cl -All | Format-Table CommandType, Name, Definition
-          Get-Command ccache -All | Format-Table CommandType, Name, Definition
-          Rename-Item -Path "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.33.31629\bin\HostX64\x64\cl.exe" -NewName "cl-real.exe"
-          Copy-Item -Path "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.33.31629\bin\HostX64\x64\cl.exe.config" "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.33.31629\bin\HostX64\x64\cl-real.exe.config" 
-          Copy-Item "C:\Users\runneradmin\.cargo\bin\ccache.exe" -Destination "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.33.31629\bin\HostX64\x64\cl.exe"
-          Get-ChildItem "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.33.31629\bin\HostX64\x64\"
-          echo 'CCACHE_COMPILER=C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.33.31629\bin\HostX64\x64\cl-real.exe' >> $Env:GITHUB_ENV
-          echo 'CCACHE_COMPILERTYPE=msvc' >> $Env:GITHUB_ENV
-          echo 'CCACHE_STATSLOG=C:\Users\runneradmin\ccache\statslog.txt' >> $Env:GITHUB_ENV
-          echo 'CCACHE_LOGFILE=C:\Users\runneradmin\ccache\logfile.txt' >> $Env:GITHUB_ENV
-          echo 'UseMultiToolTask=true' >> $Env:GITHUB_ENV
-          echo 'VCPKG_KEEP_ENV_VARS=CCACHE_COMPILER;CCACHE_STATSLOG;CCACHE_LOGFILE;CCACHE_COMPILERTYPE;UseMultiToolTask' >> $Env:GITHUB_ENV
+          cl_exe=$(which cl.exe)
+          cl_dir=$(dirname "$cl_exe")
+          cl_dir_windows="C:${cl_dir#/c}"
+          mv -v "$cl_exe" "$cl_dir"/cl-real.exe
+          cp -v "$cl_dir"/cl.exe.config "$cl_dir"/cl-real.exe.config
+          ccache_exe=$(which ccache.exe)
+          cp -v "$ccache_exe" "$cl_dir"/cl.exe
+          ls -l "$cl_dir"
+          echo "CCACHE_COMPILER=$cl_dir_windows/cl-real.exe" >> $GITHUB_ENV
+          echo 'CCACHE_COMPILERTYPE=msvc' >> $GITHUB_ENV
+          echo 'CCACHE_STATSLOG=C:\Users\runneradmin\ccache\statslog.txt' >> $GITHUB_ENV
+          echo 'CCACHE_LOGFILE=C:\Users\runneradmin\ccache\logfile.txt' >> $GITHUB_ENV
+          echo 'UseMultiToolTask=true' >> $GITHUB_ENV
+          echo 'VCPKG_KEEP_ENV_VARS=CCACHE_COMPILER;CCACHE_STATSLOG;CCACHE_LOGFILE;CCACHE_COMPILERTYPE;UseMultiToolTask' >> $GITHUB_ENV
 
       - name: See if ccache works
         run: |
@@ -171,14 +174,6 @@ jobs:
           ccache -s
           ccache --show-log-stats -v -v
           cat C:\Users\runneradmin\ccache\logfile.txt
-
-      - name: print log
-        if: ${{ runner.os == 'Windows' && failure() }}
-        run: |
-          echo "STDOUT"
-          cat 'D:\a\realm-js\realm-js\vendor\realm-core\tools\vcpkg\ports\buildtrees\openssl\build-x64-windows-rel-1-out.log'
-          echo "STDERR"
-          cat 'D:\a\realm-js\realm-js\vendor\realm-core\tools\vcpkg\ports\buildtrees\openssl\build-x64-windows-rel-1-err.log'
 
       # build the c++ library for IOS
       - name: Build IOS
