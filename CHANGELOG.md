@@ -16,6 +16,7 @@
 ### Internal
 * Enable tests for notifications on dictionary.
 * Automate releasing package on GHA
+* Enable ccache on windows x86 builds for pull requests
 <!-- * Either mention core version or upgrade -->
 <!-- * Using Realm Core vX.Y.Z -->
 <!-- * Upgraded Realm Core from vX.Y.Z to vA.B.C -->
